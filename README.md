@@ -69,19 +69,32 @@ all regions. All AWS services (Cloudtrail, SNS, SQS) created will have a prefix 
 
     [AWSCLI] (https://github.com/aws/aws-cli) command line tool is used to create Cloudtrail. To install (or upgrade) the package:
 
-        pip install awscli [--upgrade]
+```
+$ brew install awscli
+```
 
     This will install _aws_ command under /usr/local/bin. There are three ways to setup AWS CLI AWS credentials. The examples here assumes you run the Cloudtrail creation code on an on-premise system and use a configuration file for key id and key secret. If you run it on EC2, you need to create an IAM role and åthe aws cli can use role-based token automatically.
+    
+   To configure AWSCLI:
+    
+```
+$ aws --profile <profile> configure
+```
 
-    An example of the AWS cli configuration file:
+   The above command will generate two files, for example:
+   
+```
+$ cat /etc/.aws/awscli.conf
+# For AWS CLI
+[profile mylab-cloudtrail]
+region = us-west-2
+...
 
-        /etc/aws/awscli.conf
-
-        # For AWS CLI
-		[default]
-		region=us-west-2
-		aws_access_key_id=<access key>
-		aws_secret_access_key=<access secret>
+$cat /etc/.aws/credentials
+[mylab-cloudtrail]
+aws_access_key_id = <key id>
+aws_secret_access_key = <secrect>
+```
 			
 
 * Create a S3 bucket for CloudTrail report
