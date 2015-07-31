@@ -116,7 +116,7 @@ _accountname-__cloudtrail.myfqdn_.
 
 ## Create AWS CloudTrail
 
-For security auditing, you should monitor all regions that CloudTrail service is available. These are the current supported regions:
+For security auditing, you should monitor all regions that CloudTrail service is available. These are the [current supported regions](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-supported-regions.html):
 
 * us-east-1
 * us-west-1
