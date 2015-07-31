@@ -121,6 +121,7 @@ For security auditing, you should monitor all regions that CloudTrail service is
 * us-east-1
 * us-west-1
 * us-west-2
+* eu-central-1
 * eu-west-1
 * sa-east-1
 * ap-northeast-1
