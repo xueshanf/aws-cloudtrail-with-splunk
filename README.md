@@ -73,7 +73,7 @@ all regions. All AWS services (Cloudtrail, SNS, SQS) created will have a prefix 
 $ brew install awscli
 ```
 
-    This will install _aws_ command under /usr/local/bin. There are three ways to setup AWS CLI AWS credentials. The examples here assumes you run the Cloudtrail creation code on an on-premise system and use a configuration file for key id and key secret. If you run it on EC2, you need to create an IAM role and åthe aws cli can use role-based token automatically.
+   This will install _aws_ command under /usr/local/bin. There are three ways to setup AWS CLI AWS credentials. The examples here assumes you run the Cloudtrail creation code on an on-premise system and use a configuration file for key id and key secret. If you run it on EC2, you need to create an IAM role and åthe aws cli can use role-based token automatically.
     
    To configure AWSCLI:
     
