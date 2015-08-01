@@ -95,14 +95,6 @@ $cat /etc/.aws/credentials
 aws_access_key_id = <key id>
 aws_secret_access_key = <secrect>
 ```
-			
-
-* Create a S3 bucket for CloudTrail report
-
-    We will aggregate CloudTrail reports from different regions into one S3 bucket. A bucket name used in this example is:
-*<accountNumber>-cloudtrail*.
-
-  Follow the instructions here (http://docs.aws.amazon.com/awscloudtrail/latest/userguide/create_trail_using_the_console.html), but skip the optional steps. We will setup SNS using [create-cloudtrail](./scripts/create-cloudtrail.sh). CloudTrail console service will generate a S3 bucket with proper access policies.  
 
 * Create an IAM user
 
