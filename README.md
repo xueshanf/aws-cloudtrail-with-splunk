@@ -63,7 +63,7 @@ In this integration, we create CloudTrail service for each region and Simple Not
 ## Prerequisites for this setup
 
 All the setups can be done through AWS console, but we use a script for CloudTrail setup to make sure we have naming schema consistency cross
-all regions. All AWS services (Cloudtrail, SNS, SQS) created will have a prefix __'accountname-'__
+all regions. All AWS services (Cloudtrail, SNS, SQS) created will have a prefix __'accountNumber-'__
 
 * Install AWSCLI 
 
@@ -100,7 +100,7 @@ aws_secret_access_key = <secrect>
 * Create a S3 bucket for CloudTrail report
 
     We will aggregate CloudTrail reports from different regions into one S3 bucket. A bucket name used in this example is:
-_accountname-__cloudtrail.myfqdn_. 
+*<accountNumber>-cloudtrail*.
 
   Follow the instructions here (http://docs.aws.amazon.com/awscloudtrail/latest/userguide/create_trail_using_the_console.html), but skip the optional steps. We will setup SNS using [create-cloudtrail](./scripts/create-cloudtrail.sh). CloudTrail console service will generate a S3 bucket with proper access policies.  
 
@@ -121,20 +121,20 @@ For security auditing, you should monitor all regions that CloudTrail service is
 * us-east-1
 * us-west-1
 * us-west-2
-* eu-central-1
 * eu-west-1
 * sa-east-1
 * ap-northeast-1
 * ap-southeast-1	
 * ap-southeast-2
 
-To enable CloudTrail on these regions, download and run [create-cloudtrail](./scripts/create-cloudtrail.sh)
+To enable CloudTrail on these regions, download and run [cloudtrail-admnin.sh](./scripts/cloudtrail-admin.sh)
 
 The script calls AWSCLI cloudtrail command to:
 
-* Enable Cloudtrail service in each region to send reports to a __accountname-__cloudtrail.__mfqdn__ S3 bucket
+* Enable Cloudtrail service in each region to send reports to a *s3://<account-number>-cloudtrail* S3 bucket
+* Eeach regions trail name is *s3://<accountNumber>-cloudtrail-<region>*
 * Create Simple Notification Service (SNS) topic for the Cloudtrail service in each region
-* Create  __accountname__-cloudtrail SQS in one region to receive CloudTrail report notification
+* (Optional) Create *<accountNumber>_-cloudtrail* SQS in one region to receive CloudTrail report notification. You only need this for Splunk.
 
 The script has a dryrun (-n) option to generate the commands so you can see actual commands without running it. 
 
@@ -142,7 +142,7 @@ We consolidate all CloudTrails reports into one S3 bucket that you give at the c
 
 ## Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics
 
-The SQS named _accountname-cloudtrail_ is creased by create-cloudtrail script. It is easiest to use AWS's SQS service console to subscribe the queue to each SNS cloudtrail SNS topics because AWS service will generate proper policy for the queue to allow messages from the SNS topics.
+The SQS named _accountNumber-cloudtrail_ is creased by create-cloudtrail script. It is easiest to use AWS's SQS service console to subscribe the queue to each SNS cloudtrail SNS topics because AWS service will generate proper policy for the queue to allow messages from the SNS topics.
 
 SQS is needed in Splunk AWS app configuration. Splunk AWS app runs at defined interval to retrieve messages from AWS SQS service. The message body contains the S3 bucket location for Cloudtrail reports. Splunk then calls S3 API to get Cloudtrail reports from the S3 bucket.
 
@@ -249,8 +249,8 @@ It will generate a __inputs.conf__ file, that can be managed by a configuration 
 	interval = 30
 	remove_files_when_done = 0
 	key_id = <access key>
-	secret_key = s<access key secret>
-	sqs_queue = accountname-cloudtrail
+	secret_key = <access key secret>
+	sqs_queue = <accountNumber>-cloudtrail
 	sqs_queue_region = us-west-2
 	sourcetype = aws-cloudtrail
 	script_iterations = 1000000
