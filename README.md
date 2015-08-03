@@ -125,7 +125,7 @@ Many tools are available to generate visualized reports using the CloudTrail fil
 
 ## The CloudTrail and Spunk integration
 
-## Why use CloudTrail
+### Why use CloudTrail
 Traditionally system administrators monitor a system's integrity using intrusion detection tools such as Tripwire. System logs are usually sent to 
 a central log server for auditing and security analysis.
 
