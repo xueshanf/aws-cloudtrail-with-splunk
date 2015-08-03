@@ -172,7 +172,6 @@ if [[ -z $action || -z $profile || -z $region && $action != 'show' ]]; then
   exit 1
 fi
 
-<<<<<<< HEAD
 echo "Getting AWS account number ..."
 accountname=$(aws --profile $profile iam get-user | jq '.User.Arn' | grep -Eo '[[:digit:]]{12}')
 if [ -z "$accountname" ]; then
@@ -180,25 +179,11 @@ if [ -z "$accountname" ]; then
   exit 1
 else 
   if [[ ! -z "bucket" && $interactive -ne 0 && $action != "show" ]]; then
-=======
-if [ ! -z "$bucket" ]; then
-  echo "Getting AWS account number ..."
-  accountname=$(aws --profile $profile iam get-user | jq '.User.Arn' | grep -Eo '[[:digit:]]{12}')
-  if [ -z "$accountname" ]; then
-    echo "Cannot find AWS account number."
-    exit 1
-  else 
-    if [[ $interactive -ne 0 && $action != "show" ]]; then
->>>>>>> 02c6f6ea0d6d4b3244621110c189d5ef3b4d2da3
       answer='N'
       echo -n "Do you accept the $accountname SNA and cloudtrail bucket prefix? [Y/N]"
       read answer
       echo ""
       [ "X$answer" != "XY" ] && echo "Do nothing. Quit."&&  exit 0
-<<<<<<< HEAD
-=======
-    fi
->>>>>>> 02c6f6ea0d6d4b3244621110c189d5ef3b4d2da3
   fi
 fi
 # Don't exist on non-zero code because the following aws commmands exit code
