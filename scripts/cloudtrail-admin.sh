@@ -39,21 +39,21 @@ create(){
     [ $dryrun -eq 0 ] && $cmd
   done
 
-  # For SplunkAppForAWS, you need a SQS. Other applications may not need this
-  # Create one primary cloudtrail which will include other trails logs
-
+  # This is optional. Some third party AWS log service, e.g. SplunkAppForAWS, may need a SQS. 
   # Cloudtrail SQS and Trail name
   queuename=${accountname}-cloudtrail
-  answer='N'
-  echo "Splunk integration needs a message queue."
-  echo -n "Do you want to create SQS $queuename? [Y/N]"
-  read answer
-  echo ""
-  if [ "X$answer" != "XY" ]; then
-    echo "No queue is created."
-    exit 0
-  else
-    cmd="aws --profile $profile sqs create-queue --queue-name $queuename --region ${region}"
+  if [ $interactive -eq 0 ]; then
+    answer='N'
+    echo -n "Do you want to create SQS $queuename? [Y/N]"
+    read answer
+    echo ""
+    if [ "X$answer" != "XY" ]; then
+      echo "No queue is created."
+      exit 0
+    else
+      echo "Creating SQS service."
+      cmd="aws --profile $profile sqs create-queue --queue-name $queuename --region ${region}"
+    fi
     [ $dryrun -eq 0 ] && $cmd
   fi
 }
@@ -72,7 +72,11 @@ show(){
   done
 
   echo "SQS"
-  aws --profile coreos-cluster sqs list-queues --queue-name-prefix $accountname | jq --raw-output  '.QueueUrls[]'
+  if [ ! -z "$accountname" ]; then
+    aws --profile $profile sqs list-queues --queue-name-prefix $accountname | jq --raw-output  '.QueueUrls[]'
+  else
+    aws --profile $profile sqs list-queues | jq --raw-output  '.QueueUrls[]'
+  fi
 }
 
 delete(){
@@ -106,12 +110,13 @@ delete(){
 }
 
 help(){
-  echo "create-cloudtrail [-p <profile>] -b <bucket> -r region -n"
+  echo "create-cloudtrail [-p <profile>] -b <bucket> -r region -n -y"
   echo ""
   echo " -a <create|show|delete>: action. create or delete everthing."
   echo " -p <aws profile>: authenticate as this profile."
   echo " -b <bucket>: optional. bucket name to get all trail reports."
   echo " -r <region>: region to get AWS global events, e.g. IAM"
+  echo " -y     : non-interative mode. Answer to yes to all default values."
   echo " -n     : dryrun. print out the commands"
   echo " -h     : Help"
 }
@@ -162,7 +167,7 @@ do
   esac
 done
 
-if [[ -z $action || -z $profile || -z $region ]]; then
+if [[ -z $action || -z $profile || -z $region && $action != 'show' ]]; then
   help
   exit 1
 fi
@@ -173,12 +178,12 @@ if [ -z "$accountname" ]; then
   echo "Cannot find AWS account number."
   exit 1
 else 
-  if [[ $interactive -ne 0 && $action != "show" ]]; then
-    answer='N'
-    echo -n "Do you accept the $accountname SNA and cloudtrail bucket prefix? [Y/N]"
-    read answer
-    echo ""
-    [ "X$answer" != "XY" ] && echo "Do nothing. Quit."&&  exit 0
+  if [[ ! -z "bucket" && $interactive -ne 0 && $action != "show" ]]; then
+      answer='N'
+      echo -n "Do you accept the $accountname SNA and cloudtrail bucket prefix? [Y/N]"
+      read answer
+      echo ""
+      [ "X$answer" != "XY" ] && echo "Do nothing. Quit."&&  exit 0
   fi
 fi
 # Don't exist on non-zero code because the following aws commmands exit code
@@ -199,13 +204,12 @@ fi
 # Call functions based on action 
 case $action in
   'create')
-    trail=$(aws --profile $profile cloudtrail describe-trails --region us-west-2 | jq --raw-output '.trailList[].Name')
-    if [ $? -eq 0 ];
-    then
+    trail=$(aws --profile $profile cloudtrail describe-trails --region $region | jq --raw-output '.trailList[].Name')
+    if [ -z "$trail" ]; then
+      create
+    else
       echo "$accountname already has CloudTrail setup: $trail."
       exit 0
-    else
-      create
     fi
     ;;
   'delete')
