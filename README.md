@@ -9,7 +9,7 @@
 - [Quick start: Create AWS CloudTrail](#quick-start-create-aws-cloudtrail)
 - [What is CloudTrail](#what-is-cloudtrail)
 - [Why use CloudTrail](#why-use-cloudtrail)
-- [Visualized reporting tools](#visualized-reporting-tools)
+- [Third party visualized reporting tools](#third-party-visualized-reporting-tools)
 - [The CloudTrail and Spunk integration](#the-cloudtrail-and-spunk-integration)
 - [Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics](#subscribe-simple-queue-service-sqs-to-cloudtrail-sns-topics)
 - [Setup SplunkAppForAWS](#setup-splunkappforaws)
@@ -176,7 +176,7 @@ Here is an example of API call recorded by CloudTrail and how Spunk reports it (
 	   }
 	}
 
-## Visualized reporting tools
+## Third party visualized reporting tools
 Many tools are available to generate visualized reports using the CloudTrail files stored in S3 bucket. Here are listed 
 [AWS partners](http://aws.amazon.com/cloudtrail/partners/). This documentation describes how to use [SplunkAppforAWS](http://apps.splunk.com/app/1274/) to consume Cloudtrail data and generate reports. 
 
