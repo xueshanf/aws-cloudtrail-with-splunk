@@ -8,7 +8,7 @@
 - [Quick start: Create AWS CloudTrail](#quick-start-create-aws-cloudtrail)
 - [Third party visualized reporting tools](#third-party-visualized-reporting-tools)
 - [The CloudTrail and Spunk integration](#the-cloudtrail-and-spunk-integration)
-- [Why use CloudTrail](#why-use-cloudtrail)
+  - [Why use CloudTrail](#why-use-cloudtrail)
   - [Create an IAM user for Splunk integration](#create-an-iam-user-for-splunk-integration)
   - [Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics](#subscribe-simple-queue-service-sqs-to-cloudtrail-sns-topics)
   - [Setup SplunkAppForAWS](#setup-splunkappforaws)
