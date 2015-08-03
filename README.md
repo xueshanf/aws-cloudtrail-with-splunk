@@ -5,14 +5,14 @@
 - [Overview](#overview)
 - [Prerequisites for this setup](#prerequisites-for-this-setup)
   - [Install AWSCLI and Jq](#install-awscli-and-jq)
-  - [Create an IAM user for Splunk integration](#create-an-iam-user-for-splunk-integration)
 - [Quick start: Create AWS CloudTrail](#quick-start-create-aws-cloudtrail)
 - [What is CloudTrail](#what-is-cloudtrail)
 - [Why use CloudTrail](#why-use-cloudtrail)
 - [Third party visualized reporting tools](#third-party-visualized-reporting-tools)
 - [The CloudTrail and Spunk integration](#the-cloudtrail-and-spunk-integration)
-- [Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics](#subscribe-simple-queue-service-sqs-to-cloudtrail-sns-topics)
-- [Setup SplunkAppForAWS](#setup-splunkappforaws)
+  - [Create an IAM user for Splunk integration](#create-an-iam-user-for-splunk-integration)
+  - [Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics](#subscribe-simple-queue-service-sqs-to-cloudtrail-sns-topics)
+  - [Setup SplunkAppForAWS](#setup-splunkappforaws)
   - [Billing and usage module](#billing-and-usage-module)
   - [CloudTrail module](#cloudtrail-module)
   - [Troubleshooting](#troubleshooting)
@@ -58,16 +58,6 @@ $cat /etc/.aws/credentials
 aws_access_key_id = <key id>
 aws_secret_access_key = <secrect>
 ```
-
-### Create an IAM user for Splunk integration
-
-   You should create an IAM user with the minimum access privileges needed. 
-
-   Fexample, you can create an IAM user _cloudtrail-splunkapp_  which has permission to read SQS, delete message from SQS, and get data from S3 bucket. The following polices should work if you use canned AWS policy generator:
-
-* Readonly access to S3 bucket
-* Readonly access to CloudTrail
-* Full access to the SQS (it deletes messages after read stuff from the message queue)
 
 
 ## Quick start: Create AWS CloudTrail
@@ -182,18 +172,28 @@ Many tools are available to generate visualized reports using the CloudTrail fil
 
 ## The CloudTrail and Spunk integration
 
+### Create an IAM user for Splunk integration
+
+   You should create an IAM user with the minimum access privileges needed. 
+
+   Fexample, you can create an IAM user _cloudtrail-splunkapp_  which has permission to read SQS, delete message from SQS, and get data from S3 bucket. The following polices should work if you use canned AWS policy generator:
+
+* Readonly access to S3 bucket
+* Readonly access to CloudTrail
+* Full access to the SQS (it deletes messages after read stuff from the message queue)
+
 In this integration, we create CloudTrail service for each region and Simple Notification Service (SNS) topic for each CloudTrail service. The reports from all regions are aggregated to one S3 bucket. One Simple Queue Service (SQS) is subscribed to all the SNS topics. 
 
 ![](./images/splunk-aws-integration.png)
 
 
-## Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics
+### Subscribe Simple Queue Service (SQS) to CloudTrail SNS topics
 
 The SQS named *`<accountNumber>`-cloudtrail* is created by cloudtrail-admin.sh script. It is easiest to use AWS's SQS service console to subscribe the queue to each SNS cloudtrail SNS topics because AWS service will generate proper policy for the queue to allow messages from the SNS topics.
 
 SQS is needed in Splunk AWS app configuration. Splunk AWS app runs at defined interval to retrieve messages from AWS SQS service. The message body contains the S3 bucket location for Cloudtrail reports. Splunk then calls S3 API to get Cloudtrail reports from the S3 bucket.
 
-## Setup SplunkAppForAWS
+### Setup SplunkAppForAWS
 
 The application has two major report categories - Cloudtrail monitoring for API activities, and Billing and Usage that helps budgeting and cost analysis. 
 
