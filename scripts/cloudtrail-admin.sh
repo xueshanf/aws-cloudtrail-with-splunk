@@ -106,12 +106,13 @@ delete(){
 }
 
 help(){
-  echo "create-cloudtrail [-p <profile>] -b <bucket> -r region -n"
+  echo "create-cloudtrail [-p <profile>] -b <bucket> -r region -n -y"
   echo ""
   echo " -a <create|show|delete>: action. create or delete everthing."
   echo " -p <aws profile>: authenticate as this profile."
   echo " -b <bucket>: optional. bucket name to get all trail reports."
   echo " -r <region>: region to get AWS global events, e.g. IAM"
+  echo " -y     : non-interative mode. Answer to yes to all default values."
   echo " -n     : dryrun. print out the commands"
   echo " -h     : Help"
 }
@@ -167,18 +168,20 @@ if [[ -z $action || -z $profile || -z $region ]]; then
   exit 1
 fi
 
-echo "Getting AWS account number ..."
-accountname=$(aws --profile $profile iam get-user | jq '.User.Arn' | grep -Eo '[[:digit:]]{12}')
-if [ -z "$accountname" ]; then
-  echo "Cannot find AWS account number."
-  exit 1
-else 
-  if [[ $interactive -ne 0 && $action != "show" ]]; then
-    answer='N'
-    echo -n "Do you accept the $accountname SNA and cloudtrail bucket prefix? [Y/N]"
-    read answer
-    echo ""
-    [ "X$answer" != "XY" ] && echo "Do nothing. Quit."&&  exit 0
+if [ ! -z "$bucket" ]; then
+  echo "Getting AWS account number ..."
+  accountname=$(aws --profile $profile iam get-user | jq '.User.Arn' | grep -Eo '[[:digit:]]{12}')
+  if [ -z "$accountname" ]; then
+    echo "Cannot find AWS account number."
+    exit 1
+  else 
+    if [[ $interactive -ne 0 && $action != "show" ]]; then
+      answer='N'
+      echo -n "Do you accept the $accountname SNA and cloudtrail bucket prefix? [Y/N]"
+      read answer
+      echo ""
+      [ "X$answer" != "XY" ] && echo "Do nothing. Quit."&&  exit 0
+    fi
   fi
 fi
 # Don't exist on non-zero code because the following aws commmands exit code
