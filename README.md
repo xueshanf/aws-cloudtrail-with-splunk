@@ -6,7 +6,7 @@
 - [Prerequisites for this setup](#prerequisites-for-this-setup)
   - [Install AWSCLI and Jq](#install-awscli-and-jq)
   - [Create an IAM user for Splunk integration](#create-an-iam-user-for-splunk-integration)
-- [Create AWS CloudTrail](#create-aws-cloudtrail)
+- [Quick start: Create AWS CloudTrail](#quick-start-create-aws-cloudtrail)
 - [What is CloudTrail](#what-is-cloudtrail)
 - [Why use CloudTrail](#why-use-cloudtrail)
 - [Visualized reporting tools](#visualized-reporting-tools)
@@ -70,7 +70,7 @@ aws_secret_access_key = <secrect>
 * Full access to the SQS (it deletes messages after read stuff from the message queue)
 
 
-## Create AWS CloudTrail
+## Quick start: Create AWS CloudTrail
 
 For security purpose, we monitor all regions that CloudTrail service is available. These are the [current supported regions](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-supported-regions.html):
 
@@ -85,7 +85,7 @@ For security purpose, we monitor all regions that CloudTrail service is availabl
 
 To enable CloudTrail on these regions, download and run [cloudtrail-admnin.sh](./scripts/cloudtrail-admin.sh). This script calls awscli cloudtrail command to create or destroy cloudtrail setup. For setup, it performs the following functinons:
 
-* Turn on Cloudtrail service in all supported region to send reports to  *s3://<accountId>-cloudtrail* S3 bucket
+* Turn on Cloudtrail service in all supported region to send reports to *s3://`<accountId`>-cloudtrail* S3 bucket
 * Create trail with name *s3://`<accountId>`-cloudtrail-`<region>`*
 * Create Simple Notification Service (SNS) topic for the Cloudtrail service in each region
 * (Optional) Create *`<accountId>`-cloudtrail* SQS in one region to receive CloudTrail report notification. You only need this for Splunk.
