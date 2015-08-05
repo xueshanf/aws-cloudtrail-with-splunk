@@ -24,6 +24,7 @@ create_trails(){
   includeGlobal="false"
   
   # Setup the first trail to receive global events
+  region=$defaultRegion
   thisTrail=${trailname}-$region
   trail=$(aws --profile $profile cloudtrail describe-trails --region $region --trail-name-list $thisTrail | jq --raw-output '.trailList[].Name')
   if [ "$trail" = "$thisTrail" ]; then
@@ -72,12 +73,11 @@ create_sqs(){
     if [ "X$answer" != "XY" ]; then
       echo "No queue is created."
       exit 0
-    else
-      echo "Creating SQS service."
-      cmd="aws --profile $profile sqs create-queue --queue-name $queuename --region ${region}"
     fi
-    [ $dryrun -eq 0 ] && $cmd
   fi
+  echo "Creating SQS service."
+  cmd="aws --profile $profile sqs create-queue --queue-name $queuename --region $defaultRegion"
+  [ $dryrun -eq 0 ] && $cmd
 }
 
 show(){
@@ -110,7 +110,7 @@ delete_sns(){
     topicarn=$(aws --profile $profile sns list-topics --region $i |grep $snstopic | awk '{print $2}' | sed 's/\"//g')
     if [ $topicarn ]; then
       cmd="aws --profile $profile sns delete-topic --topic-arn $topicarn --region $i"
-      echo $cmd
+      echo "Deleting $topicarn."
       [ $dryrun -eq 0 ] && $cmd
     fi
   done
@@ -128,7 +128,7 @@ delete_trails() {
       continue
     fi
     cmd="aws --profile $profile cloudtrail delete-trail --region $i --name $thisTrail"
-    echo $cmd
+    echo "Deleting $thisTrail."
     [ $dryrun -eq 0 ] && $cmd
   done
 }
@@ -141,7 +141,7 @@ delete_sqs() {
     echo "No SQS to delete."
   else 
     cmd="aws --profile $profile sqs delete-queue --queue-url $queueurl"
-    echo $cmd
+    echo "Deleting $queueurl."
     [ $dryrun -eq 0 ] && $cmd
   fi
 }
@@ -183,8 +183,8 @@ do
       bucket=$OPTARG
       ;;
     r)
-      region=$OPTARG
-      case $region in
+      defaultRegion=$OPTARG
+      case $defaultRegion in
          $regionRegexp)
            ;;
          *)
@@ -205,7 +205,7 @@ do
   esac
 done
 
-if [[ -z $action || -z $profile || -z $region && $action != 'show' ]]; then
+if [[ -z $action || -z $profile || -z $defaultRegion && $action != 'show' ]]; then
   help
   exit 1
 fi
