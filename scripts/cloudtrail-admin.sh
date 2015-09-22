@@ -20,8 +20,6 @@ init() {
 
 # Create trails for all supported regions and create SNS topics
 create_trails(){
-  bucketOpt="--s3-use-bucket"
-  includeGlobal="false"
   
   # Setup the first trail to receive global events
   region=$defaultRegion
@@ -37,7 +35,9 @@ create_trails(){
     thisTrail=${trailname}-$region
     setup_trail
   fi
-  
+
+  bucketOpt="--s3-use-bucket"
+  includeGlobal="false"
   # Setup the rest of the trails
   for region in $regions
   do
